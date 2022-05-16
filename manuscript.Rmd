@@ -28,15 +28,9 @@ library(tidyverse)
 ```
 
 # Introduction
-  As the saying goes, “it takes two to tango,” and interpersonal perception might be considered the social-cognitive equivalent of such a complex dance between perceivers (who make interpersonal judgments) and targets (who are judged). Even very brief interpersonal interactions are rich exchanges where targets emit behavior and cues via numerous channels. Thus it follows that perceivers can and do form perceptions on a range of dimensions, varying from fleeting judgments about discrete and context-specific thoughts or feelings, to snapshot judgments that regard more global and enduring characteristics. For example, empathic accuracy researchers examine the accuracy of perceivers’ judgments of targets’ specific thoughts and feelings (Ickes, Stinson, Bissonette, & Garcia, 1990) or changes in ongoing affective states (Levenson & Ruef, 1992). Personality researchers examine the accuracy of perceivers’ judgments of targets’ traits (Funder & Colvin, 1997), as well as the accuracy of perceptions about how others judge one’s own traits (i.e., meta-perceptions; Kenny & DePaulo, 1993).  
-  
-  Common sense suggests that navigating our complex social environment requires at least a basic competency at making accurate judgments of others as well as making oneself readable to others. However, one common theme across domains of interpersonal perception research has been a disproportionate focus on perceivers, emphasizing traits, motivations, and biases that allow perceivers to accurately understand targets (for reviews see Davis & Kraus, 1997; Hall & Bernieri, 2001). This one-sided focus has come at the expense of understanding the role targets play in these processes. Making the inevitable comparison to reading a passage of text, we know much more about the reader than we do about the book. The imbalance is striking given that interpersonal perception is inherently dyadic – a perceiver cannot make a judgment without a target person to judge. The overarching goal of this project is to address this imbalance and explore what makes for more or less “readable” targets.  
+  As the saying goes, “it takes two to tango,” and interpersonal perception might be considered the social-cognitive equivalent of such a complex dance between perceivers (who make interpersonal judgments) and targets (who are judged). Even very brief interpersonal interactions are rich exchanges where targets emit behavior and cues via numerous channels. Thus it follows that perceivers can and do form perceptions on a range of dimensions, varying from fleeting judgments about discrete and context-specific thoughts or feelings, to snapshot judgments that regard more global and enduring characteristics. For example, empathic accuracy researchers examine the accuracy of perceivers’ judgments of targets’ specific thoughts and feelings (Ickes, Stinson, Bissonette, & Garcia, 1990) or changes in ongoing affective states (Levenson & Ruef, 1992). Personality researchers examine the accuracy of perceivers’ judgments of targets’ traits (Funder & Colvin, 1997), as well as the accuracy of perceptions about how others judge one’s own traits (i.e., meta-perceptions; Kenny & DePaulo, 1993). Despite the numerous studies on interpersonal accuracy, to our knowledge, there is no study that investigated different types of interpersonal accuracy simultaneously. In other words, it is not clear whether interpersonal accuracy as well as components of accuracy (e.g., perceiver and target effects) for thoughts, affect, and personality traits are comparable.  
 
-  According to Funder’s (1995) Realistic Accuracy Model, accurate interpersonal perceptions can be facilitated by good judges, but also by good targets.Funder further proposed that accurate perceptions are a product of a series of stages. A target must emit some relevant behavior that is made available to the perceiver. The perceiver must then detect these cues and correctly utilize them to make a judgment. Note that RAM is not a general process model of how all interpersonal judgments are formed, but rather a description of how accurate judgments are formed. The target’s direct role in this process will be most important in the first two stages (relevance and availability). Characteristics that make targets more likely to emit relevant cues and enhance the availability of those cues are likely to be correlated with readability. The present study focuses on three groups of predictors of target readability: Expressivity, social-threat sensitivity and psychological adjustment.  
-
-  Even though studies suggest that the good target seems to be a more plausible determinate of interpersonal accuracy than the good judge, we still know much less about which targets are more readable than others and whether or not target readability is a general trait or if it is instead specific to different types of judgments. The goal of this project is to address this imbalance. Because looking for more or less readable targets presumes individual differences in readability, Aim 1 is to examine how variance in interpersonal accuracy is distributed across levels (i.e., how variance associated with differences among targets compares to variance associated with differences among perceivers). Aim 2 is to examine whether target readability correlates across measures (e.g., whether a target whose personality traits are easy to read also has affect that is easy read) by using multiple accuracy measures that represent a range of interpersonal judgments. To capture a more complete picture of the complexity of interpersonal processes, the dimensions targets were judged on ranged from stable (i.e., personality traits) to dynamic (i.e., continuous affect and discrete thoughts that potentially change moment by moment). And finally Aim 3 is to explore the individual differences (assessing the constructs described above) that may correlate with target readability and look for patterns of interrelations across outcome measures.  
-
-  In order to test these research aims, participants were videotaped interacting with a partner during brief “getting-acquainted” conversations using a round-robin design where each person served as perceiver and target in multiple interactions. After interacting, people rated their partner’s personality traits, and dynamically changing affect and thoughts. In order to assess accuracy, each partner made parallel ratings about their own traits, affect, and thoughts. Measures of expressivity, social-threat sensitivity, and psychological adjustment were collected at a later time point from the participants as well as informants in order to examine whether these variables were related to target readability on traits, affect, and thoughts.
+  In order to test this research question, participants were videotaped interacting with a partner during brief “getting-acquainted” conversations using a round-robin design where each person served as perceiver and target in multiple interactions. After interacting, people rated their partner’s personality traits, and dynamically changing affect and thoughts. In order to assess accuracy, each partner made parallel ratings about their own traits, affect, and thoughts. Measures of expressivity, social-threat sensitivity, and psychological adjustment were also collected at a later time point from the participants in order to explore whether these variables are related to interpersonal accuracy traits, affect, and thoughts.
 
 # Method {.tabset .tabset-fade}
 ## Participants
@@ -92,10 +86,8 @@ The continuous affect ratings were first binned (following Zaki et al., 2008) by
 
 ### Thought accuracy
 These data were modeled using the Social Relations Model (SRM; Kashy & Kenny, 1990; Kenny & LaVoie, 1985) which was developed for round-robin designs where interpersonal perceptions are measured. The SRM is also a cross-classified multilevel modeling strategy that breaks down a rating (in this case an accuracy score) as a function of the group mean, a perceiver effect, a target effect and a dyadic relationship effect. For example, Polly’s empathic accuracy for Tim is a function of their group mean3, the extent to which Polly is generally accurate at reading others’ thoughts, the extent to which Tim’s thoughts are generally accurately perceived by others, and Polly’s unique accuracy for Tim above and beyond the other main effects.  
-Similar to decomposing overall accuracy into normative and distinctive components in the SAM analyses, baseline accuracy scores were calculated (see above for details) in order to estimate how much of the perceivers’ overall thought accuracy is attributable to making correct inferences based on general knowledge and/or stereotypes. Empathic accuracy scores were divided into normative (baseline accuracy) and distinctive accuracy (overall accuracy corrected for baseline accuracy) and SRM analyses were conducted on each component separately.  
 
-To address Aim 1, baseline models with the above specified components were
-computed for each of the outcome measures. Using the R lme package (Bates, Maechler, Bolker, & Sarkar, 2013), the Empirical Bayes random target effect estimates for each of these models were extracted. These values were then used in the analyses addressing Aim 2 (determining whether target readability correlated across measures) and Aim 3 (determining whether individual differences predicted target readability).  
+Similar to decomposing overall accuracy into normative and distinctive components in the SAM analyses, baseline accuracy scores were calculated (see above for details) in order to estimate how much of the perceivers’ overall thought accuracy is attributable to making correct inferences based on general knowledge and/or stereotypes. Empathic accuracy scores were divided into normative (baseline accuracy) and distinctive accuracy (overall accuracy corrected for baseline accuracy) and SRM analyses were conducted on each component separately.  
 
 # Results {.tabset .tabset-fade}
 ```{r, include = FALSE}
@@ -108,12 +100,24 @@ df <- rio::import(here::here("data", "df.csv"))
 
 ## Descriptive statistics
 ```{r}
+descriptive_df <-
+df %>% 
+  select(
+    InsecAtt, AnxAtt, AvoAtt, Authenticity, Mask, NTB, Loneliness,
+    FNE, beqpos, beqneg, beqstr, erqsup, erqrea, RSE, SAT, POW,
+    SIAS, SPS, SIAPS, Extr, Agree, Consc, Neurot, Open
+  )
+
+map_dbl(descriptive_df, mean, na.rm = TRUE)
+map_dbl(descriptive_df, sd, na.rm = TRUE)
+
+get_descrip(descriptive_df, Extr)
 
 ```
 Table 1 represents descriptive statistics for all the variables in the present study.
 
 ```{r}
-table1
+
 ```
 
 ## Aim 1
@@ -122,8 +126,44 @@ table1
 In order to decompose the variance in interpersonal accuracy and compare across accuracy measures I ran a series of baseline variance decomposition models on the accuracy measures. All analyses were conducted in R’s lme4 package (Bates et al., 2013).
 
 ```{r}
+# personality traits
+samdata <- import(here("data", "asd.csv"))
+
+library(lme4)
+library(lmerTest)
+options(digits=5)
+
+samdata$Avgtrait <- samdata$Avgtrait - 1
+
+samdata$targSRr <- samdata$targSR - samdata$Avgtrait
+
+samdata$targSRrC <- samdata$targSRr -0.0003679
+samdata$AvgtraitC <- samdata$Avgtrait - 4.0317762737
+samdata$ptraitC <- samdata$ptrait - 3.5820554
+
+null1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), data=samdata)
+summary (null1)
+
+samdat1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), data=samdata)
+summary (samdat1)
+
+SAM1 <- lmer (ptrait ~ targSRrC + AvgtraitC + (targSRrC + AvgtraitC |PerUn) + (targSRrC + AvgtraitC |TarUn) + (targSRrC + AvgtraitC |DyUn), data=samdata)
+
+summary (SAM1)
 
 ```
+
+```{r}
+# affect
+
+```
+
+```{r}
+# thought
+
+
+```
+
 
 ## Aim 2
 ### Examine interrelations among target readability estimates for different measures of interpersonal accuracy
@@ -138,7 +178,7 @@ In order to examine interrelations among target readability estimates for differ
 ## Aim 3
 ### Investigate potential individual differences that correlate with target readability as well as look for patterns of individual differences that consistently correlate with readability across measures
 
-Based on guiding hypotheses generated from Funder’s RAM and previous research regarding target readability, individual differences linked to expressivity, social threat sensitivity, and psychological adjustment were measured. In order to investigate whether any of these measures correlated with target readability, I computed correlations between the Empirical Bayes random target effects extracted from the baseline models estimated in Aim 1 and the individual difference variables (assessed via self-reports and informant-reports). Table 8 displays these correlations separately for self-reports and informant-reports alongside 95% confidence intervals.
+Based on guiding hypotheses generated from Funder’s RAM and previous research regarding target readability, individual differences linked to expressivity, social threat sensitivity, and psychological adjustment were measured. In order to investigate whether any of these measures correlated with target readability, I computed correlations between the Empirical Bayes random target effects extracted from the baseline models estimated in Aim 1 and the individual difference variables (assessed via self-reports and informant-reports). Table X displays these correlations separately for self-reports and informant-reports alongside 95% confidence intervals.
 
 ```{r}
 
