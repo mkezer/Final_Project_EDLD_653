@@ -96,8 +96,54 @@ Similar to decomposing overall accuracy into normative and distinctive component
 # import functions
 source("functions.R")
 
-# import data
-df <- rio::import(here::here("data", "df.csv"))
+# import data for exploratory predictors
+paths <- dir_ls(here("data"))
+df_names <- gsub(".+data/(.+)\\.sav", "\\1", paths)
+
+walk2(df_names, paths, ~{
+  assign(.x, import(.y), envir = .GlobalEnv)
+})
+
+# Make variable types/names congruent for merging
+# rename
+ind_diffs_self %<>% 
+  rename(PerUn = SubNum)
+
+old_names <- names(raw_informant_data[,44:189])
+new_names <- paste0(names(raw_informant_data[, 44:189]), "_inf")
+
+raw_informant_data %<>% 
+  rename_at(vars(old_names), ~ new_names)
+
+# remove
+ind_diffs_self %<>% 
+  select(-sex:-strait26,
+         -Perceiver, -Target)
+
+raw_informant_data %<>% 
+  select(-Perceiver,
+         -name:-V3)
+
+# bfi
+informant_bfi <- 
+  raw_informant_data %>% 
+  select(PerUn, starts_with("bfi")) %>% 
+    group_by(PerUn) %>% 
+    summarise(across(bfi1:bfi26, 
+                     mean, na.rm = TRUE)
+              ) %>% 
+    ungroup() %>% 
+    rename_at(vars(bfi1:bfi26), ~ paste0("itrait", 1:26)
+              )
+# Merge
+df <- list(perceiver_target_data,
+           perceiver_target_affect_EA,
+           ind_diffs_self,
+           informant_bfi,
+           aggregated_informant_data) %>% 
+  reduce(left_join)
+
+rm(list = gdata::keep(df))
 ```
 
 ## Descriptive statistics for Empathic Accuracy
@@ -151,7 +197,7 @@ sjPlot::tab_model(null1)
 
 ```{r}
 # affect
-
+samEACaggdata <- rio::import(here::here("data", "samdata.csv"))
 
 ```
 
@@ -179,14 +225,20 @@ sjPlot::tab_model(SAM1)
 ## save random effects
 lapply(ranef(SAM1), write.table, 
        append = TRUE, 
-       file = "raneff from SAM1 for TRT.csv")
+       file = here::here("data", "raneff from SAM1 for TRT.csv"))
 
-## extract empirical bayesian estimates
+## extract empirical bayesian estimates for targets
 EBTRTtar <- ranef(SAM1)$TarUn
 colnames(EBTRTtar)<-c("Intercept","TSR","Norm")
 EBTRTtar$TarUn<-as.numeric(row.names(EBTRTtar))
-summary(EBTRTtar)
-sapply(EBTRTtar,sd)
+map_dbl(EBTRTtar, sd)
+
+## extract empirical bayesian estimates for perceivers
+EBTRTper <- ranef(SAM1)$PerUn
+EBTRTper$PerUn<-as.numeric(row.names(EBTRTper))
+map_dbl(EBTRTper,sd)
+
+## Density plots for random effects will be here
 
 ## fit a model for each perceiver
 models_dyad <- 
@@ -205,6 +257,8 @@ samdata %>%
 
 ```{r}
 # affect
+
+
 
 ```
 
