@@ -27,6 +27,7 @@ options(scipen = 999)
 library(tidyverse)
 library(lme4)
 library(lmerTest)
+library(rio)
 ```
 
 # Introduction
@@ -97,15 +98,17 @@ Similar to decomposing overall accuracy into normative and distinctive component
 source("functions.R")
 
 # import data for exploratory predictors
-paths <- dir_ls(here("data"))
+paths <- fs::dir_ls(here::here("data"))
 df_names <- gsub(".+data/(.+)\\.sav", "\\1", paths)
 
 walk2(df_names, paths, ~{
-  assign(.x, import(.y), envir = .GlobalEnv)
+  assign(.x, import(.y), 
+         envir = .GlobalEnv)
 })
 
 # Make variable types/names congruent for merging
 # rename
+library(magrittr)
 ind_diffs_self %<>% 
   rename(PerUn = SubNum)
 
@@ -147,7 +150,7 @@ rm(list = gdata::keep(df))
 ```
 
 ## Descriptive statistics for Empathic Accuracy
-```{r}
+```{r, include = FALSE}
 descriptive_df <-
 df %>% 
   select(
@@ -163,6 +166,7 @@ tibble(
   sd = map_dbl(descriptive_df, sd, na.rm = TRUE)
 )
 ```
+
 Table 1 represents descriptive statistics for all the variables in the present study.
 
 ```{r}
@@ -197,7 +201,16 @@ sjPlot::tab_model(null1)
 
 ```{r}
 # affect
-samEACaggdata <- rio::import(here::here("data", "samdata.csv"))
+samEACaggdata <- import(here::here("data", "c_affect.csv"))
+
+samEAC_null <- lmer (Part ~ 1 + 
+                  (1|PerUn) + 
+                  (1|TarUn) + 
+                  (1|DyUn), 
+                data = samEACaggdata)
+
+sjPlot::tab_model(samEAC_null)
+
 
 ```
 
@@ -229,7 +242,6 @@ lapply(ranef(SAM1), write.table,
 
 ## extract empirical bayesian estimates for targets
 EBTRTtar <- ranef(SAM1)$TarUn
-colnames(EBTRTtar)<-c("Intercept","TSR","Norm")
 EBTRTtar$TarUn<-as.numeric(row.names(EBTRTtar))
 map_dbl(EBTRTtar, sd)
 
@@ -241,23 +253,29 @@ map_dbl(EBTRTper,sd)
 ## Density plots for random effects will be here
 
 ## fit a model for each perceiver
-models_dyad <- 
-samdata %>% 
-  group_by(PerUn) %>% 
-  nest() %>% 
-  mutate(models = map(data, ~ {
-    
-    lm(ptrait ~ targSRrC + AvgtraitC, 
-              data = .x)
-    
-  }
-                      )
-         )
+# models_dyad <- 
+# samdata %>% 
+#   group_by(PerUn) %>% 
+#   nest() %>% 
+#   mutate(models = map(data, ~ {
+#     
+#     lm(ptrait ~ targSRrC + AvgtraitC, 
+#               data = .x)
+#     
+#   }
+#                       )
+#          )
 ```
 
 ```{r}
 # affect
+samEAC <- lmer (Part ~ targSRrC + NormC + 
+                  (targSRrC + NormC|PerUn) + 
+                  (targSRrC + NormC|TarUn) + 
+                  (targSRrC + NormC|DyUn), 
+                data = samEACaggdata)
 
+summary(samEAC)
 
 
 ```
