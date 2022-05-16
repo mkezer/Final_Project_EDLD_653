@@ -89,8 +89,7 @@ rm(list = gdata::keep(df))
 
 # Clean and rename variables
 ```{r}
-
-source("functions.R")
+names(df)
 
 
 ```
