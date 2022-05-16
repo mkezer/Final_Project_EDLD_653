@@ -25,6 +25,8 @@ options(scipen = 999)
 
 ```{r message=FALSE, include=FALSE, results='hide'}
 library(tidyverse)
+library(lme4)
+library(lmerTest)
 ```
 
 # Introduction
@@ -98,7 +100,7 @@ source("functions.R")
 df <- rio::import(here::here("data", "df.csv"))
 ```
 
-## Descriptive statistics
+## Descriptive statistics for Empathic Accuracy
 ```{r}
 descriptive_df <-
 df %>% 
@@ -120,32 +122,13 @@ Table 1 represents descriptive statistics for all the variables in the present s
 
 ```
 
-## Aim 1
-### Examine variance decomposition in interpersonal accuracy and compare across accuracy measures
+## Interpersonal accuracy for thoughts, affect, and personality traits
 
 In order to decompose the variance in interpersonal accuracy and compare across accuracy measures I ran a series of baseline variance decomposition models on the accuracy measures. All analyses were conducted in R’s lme4 package (Bates et al., 2013).
 
 ```{r}
 # personality traits
-samdata <- import(here("data", "asd.csv"))
-
-library(lme4)
-library(lmerTest)
-options(digits=5)
-
-samdata$Avgtrait <- samdata$Avgtrait - 1
-
-samdata$targSRr <- samdata$targSR - samdata$Avgtrait
-
-samdata$targSRrC <- samdata$targSRr -0.0003679
-samdata$AvgtraitC <- samdata$Avgtrait - 4.0317762737
-samdata$ptraitC <- samdata$ptrait - 3.5820554
-
-null1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), data=samdata)
-summary (null1)
-
-samdat1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), data=samdata)
-summary (samdat1)
+samdata <- import(here("data", "samdata.csv"))
 
 SAM1 <- lmer (ptrait ~ targSRrC + AvgtraitC + (targSRrC + AvgtraitC |PerUn) + (targSRrC + AvgtraitC |TarUn) + (targSRrC + AvgtraitC |DyUn), data=samdata)
 
@@ -164,25 +147,26 @@ summary (SAM1)
 
 ```
 
-
-## Aim 2
-### Examine interrelations among target readability estimates for different measures of interpersonal accuracy
-
-In order to examine interrelations among target readability estimates for different measures of interpersonal accuracy, the Empirical Bayes random target effect estimates were extracted from the analysis of the baseline models for each outcome measure (when target variance was nonzero).
-
+## Variance decomposition in interpersonal accuracy for thoughts, affect, and personality traits
 
 ```{r}
 
 ```
 
-## Aim 3
-### Investigate potential individual differences that correlate with target readability as well as look for patterns of individual differences that consistently correlate with readability across measures
+```{r}
 
-Based on guiding hypotheses generated from Funder’s RAM and previous research regarding target readability, individual differences linked to expressivity, social threat sensitivity, and psychological adjustment were measured. In order to investigate whether any of these measures correlated with target readability, I computed correlations between the Empirical Bayes random target effects extracted from the baseline models estimated in Aim 1 and the individual difference variables (assessed via self-reports and informant-reports). Table X displays these correlations separately for self-reports and informant-reports alongside 95% confidence intervals.
+```
 
 ```{r}
 
 ```
+
+## Predictors of interpersonal accuracy
+
+```{r}
+
+```
+
 
 # Discussion
 

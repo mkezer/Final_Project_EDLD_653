@@ -87,14 +87,10 @@ df <- list(perceiver_target_data,
 rm(list = gdata::keep(df))
 ```
 
-# Clean and rename variables
+# Export
 ```{r}
-names(df)
-
-
+export(df, here("data", "df.csv"))
 ```
-
-
 
 
 
