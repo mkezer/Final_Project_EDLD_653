@@ -93,6 +93,9 @@ These data were modeled using the Social Relations Model (SRM; Kashy & Kenny, 19
 Similar to decomposing overall accuracy into normative and distinctive components in the SAM analyses, baseline accuracy scores were calculated (see above for details) in order to estimate how much of the perceivers’ overall thought accuracy is attributable to making correct inferences based on general knowledge and/or stereotypes. Empathic accuracy scores were divided into normative (baseline accuracy) and distinctive accuracy (overall accuracy corrected for baseline accuracy) and SRM analyses were conducted on each component separately.  
 
 # Results {.tabset .tabset-fade}
+
+**THIS IS A VERY ROUGH DRAFT :) **
+
 ```{r, include = FALSE}
 # import functions
 source("functions.R")
@@ -149,7 +152,7 @@ df <- list(perceiver_target_data,
 rm(list = gdata::keep(df))
 ```
 
-## Descriptive statistics for Empathic Accuracy
+## Descriptive statistics
 ```{r, include = FALSE}
 descriptive_df <-
 df %>% 
@@ -173,11 +176,11 @@ Table 1 represents descriptive statistics for all the variables in the present s
 table1
 ```
 
-## Variance decomposition in interpersonal accuracy for thoughts, affect, and personality traits
+## Variance decomposition
 
 ```{r}
 # personality
-samdata <- rio::import(here::here("data", "samdata.csv"))
+samdata <- import(here::here("data", "samdata.csv"))
 
 samdata <-
   samdata %>% 
@@ -210,17 +213,24 @@ samEAC_null <- lmer (Part ~ 1 +
                 data = samEACaggdata)
 
 sjPlot::tab_model(samEAC_null)
-
-
 ```
 
 ```{r}
 # thought
+eaSRMdata <- import(here::here("data", "d_thought.csv"))
 
+# overall EA
+SRMdat1 <- lmer(EA100 ~ 
+                   (1|PerUn) + 
+                   (1|TarUn) + 
+                   (1|DyUn) + 
+                   (1|Group), 
+                 data = eaSRMdata)
 
+sjPlot::tab_model(SRMdat1)
 ```
 
-## Interpersonal accuracy for thoughts, affect, and personality traits
+## Interpersonal accuracy
 
 In order to decompose the variance in interpersonal accuracy and compare across accuracy measures I ran a series of baseline variance decomposition models on the accuracy measures. All analyses were conducted in R’s lme4 package (Bates et al., 2013).
 
@@ -250,21 +260,22 @@ EBTRTper <- ranef(SAM1)$PerUn
 EBTRTper$PerUn<-as.numeric(row.names(EBTRTper))
 map_dbl(EBTRTper,sd)
 
-## Density plots for random effects will be here
+## Density plots for random effects will be placed here
+
 
 ## fit a model for each perceiver
-# models_dyad <- 
-# samdata %>% 
-#   group_by(PerUn) %>% 
-#   nest() %>% 
-#   mutate(models = map(data, ~ {
-#     
-#     lm(ptrait ~ targSRrC + AvgtraitC, 
-#               data = .x)
-#     
-#   }
-#                       )
-#          )
+models_dyad <-
+samdata %>%
+  group_by(PerUn) %>%
+  nest() %>%
+  mutate(models = map(data, ~ {
+
+    lm(ptrait ~ targSRrC + AvgtraitC,
+              data = .x)
+
+  }
+                      )
+         )
 ```
 
 ```{r}
@@ -275,18 +286,34 @@ samEAC <- lmer (Part ~ targSRrC + NormC +
                   (targSRrC + NormC|DyUn), 
                 data = samEACaggdata)
 
-summary(samEAC)
-
+sjPlot::tab_model(samEAC)
 
 ```
 
 ```{r}
 # thought
+# baseline accuracy
+normEASRM<- lmer(BaselineEA100 ~ 
+                   (1|PerUn) + 
+                   (1|TarUn) + 
+                   (1|DyUn) + 
+                   (1|Group), 
+                 data = eaSRMdata)
 
+# corrected for baseline
+diffEASRM<- lmer(CrrctdEAnoneg ~ 
+                    (1|PerUn) + 
+                    (1|TarUn) + 
+                    (1|DyUn) + 
+                    (1|Group), 
+                  data = eaSRMdata)
 
+sjPlot::tab_model(normEASRM, diffEASRM)
 ```
 
 ## Predictors of interpersonal accuracy
+
+WILL WORK ON THIS LATER.
 
 ```{r}
 
