@@ -110,30 +110,87 @@ df %>%
     SIAS, SPS, SIAPS, Extr, Agree, Consc, Neurot, Open
   )
 
-map_dbl(descriptive_df, mean, na.rm = TRUE)
-map_dbl(descriptive_df, sd, na.rm = TRUE)
-
-get_descrip(descriptive_df, Extr)
-
+table1 <-
+tibble(
+  var = names(descriptive_df),
+  mean = map_dbl(descriptive_df, mean, na.rm = TRUE),
+  sd = map_dbl(descriptive_df, sd, na.rm = TRUE)
+)
 ```
 Table 1 represents descriptive statistics for all the variables in the present study.
 
 ```{r}
+table1
+```
+
+## Variance decomposition in interpersonal accuracy for thoughts, affect, and personality traits
+
+```{r}
+# personality
+samdata <- rio::import(here::here("data", "samdata.csv"))
+
+samdata <-
+  samdata %>% 
+  mutate(
+    
+    Avgtrait = Avgtrait - 1,
+    targSRr = targSR - Avgtrait,
+    
+    # Note to self: use a loop for these.
+    targSRrC = scale(targSRr, scale = FALSE, center = TRUE),
+    AvgtraitC = scale(Avgtrait, scale = FALSE, center = TRUE),
+    ptraitC = scale(ptrait, scale = FALSE, center = TRUE)
+  )
+
+## null model
+null1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), 
+               data = samdata)
+
+sjPlot::tab_model(null1)
+```
+
+```{r}
+# affect
+
 
 ```
+
+```{r}
+# thought
+
+
+```
+
 
 ## Interpersonal accuracy for thoughts, affect, and personality traits
 
 In order to decompose the variance in interpersonal accuracy and compare across accuracy measures I ran a series of baseline variance decomposition models on the accuracy measures. All analyses were conducted in R’s lme4 package (Bates et al., 2013).
 
 ```{r}
-# personality traits
-samdata <- import(here("data", "samdata.csv"))
+# personality
+## final model
+SAM1 <- lmer(ptrait ~ targSRrC + AvgtraitC + 
+                (1 | PerUn) + 
+                (1 | TarUn) + 
+                (1 | DyUn), 
+              data = samdata)
 
-SAM1 <- lmer (ptrait ~ targSRrC + AvgtraitC + (targSRrC + AvgtraitC |PerUn) + (targSRrC + AvgtraitC |TarUn) + (targSRrC + AvgtraitC |DyUn), data=samdata)
+summary(SAM1)
+(SAM1)
 
-summary (SAM1)
-
+## fit a model for each perceiver
+models_dyad <- 
+samdata %>% 
+  group_by(PerUn) %>% 
+  nest() %>% 
+  mutate(models = map(data, ~ {
+    
+    lm(ptrait ~ targSRrC + AvgtraitC, 
+              data = .x)
+    
+  }
+                      )
+         )
 ```
 
 ```{r}
@@ -144,20 +201,6 @@ summary (SAM1)
 ```{r}
 # thought
 
-
-```
-
-## Variance decomposition in interpersonal accuracy for thoughts, affect, and personality traits
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
 
 ```
 
