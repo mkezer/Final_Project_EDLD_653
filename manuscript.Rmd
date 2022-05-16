@@ -97,8 +97,52 @@ Similar to decomposing overall accuracy into normative and distinctive component
 To address Aim 1, baseline models with the above specified components were
 computed for each of the outcome measures. Using the R lme package (Bates, Maechler, Bolker, & Sarkar, 2013), the Empirical Bayes random target effect estimates for each of these models were extracted. These values were then used in the analyses addressing Aim 2 (determining whether target readability correlated across measures) and Aim 3 (determining whether individual differences predicted target readability).  
 
-# Results
+# Results {.tabset .tabset-fade}
+```{r, include = FALSE}
+# import functions
+source("functions.R")
 
+# import data
+df <- rio::import(here::here("data", "df.csv"))
+```
+
+## Descriptive statistics
+```{r}
+
+```
+Table 1 represents descriptive statistics for all the variables in the present study.
+
+```{r}
+table1
+```
+
+## Aim 1
+### Examine variance decomposition in interpersonal accuracy and compare across accuracy measures
+
+In order to decompose the variance in interpersonal accuracy and compare across accuracy measures I ran a series of baseline variance decomposition models on the accuracy measures. All analyses were conducted in R’s lme4 package (Bates et al., 2013).
+
+```{r}
+
+```
+
+## Aim 2
+### Examine interrelations among target readability estimates for different measures of interpersonal accuracy
+
+In order to examine interrelations among target readability estimates for different measures of interpersonal accuracy, the Empirical Bayes random target effect estimates were extracted from the analysis of the baseline models for each outcome measure (when target variance was nonzero).
+
+
+```{r}
+
+```
+
+## Aim 3
+### Investigate potential individual differences that correlate with target readability as well as look for patterns of individual differences that consistently correlate with readability across measures
+
+Based on guiding hypotheses generated from Funder’s RAM and previous research regarding target readability, individual differences linked to expressivity, social threat sensitivity, and psychological adjustment were measured. In order to investigate whether any of these measures correlated with target readability, I computed correlations between the Empirical Bayes random target effects extracted from the baseline models estimated in Aim 1 and the individual difference variables (assessed via self-reports and informant-reports). Table 8 displays these correlations separately for self-reports and informant-reports alongside 95% confidence intervals.
+
+```{r}
+
+```
 
 # Discussion
 
