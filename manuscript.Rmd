@@ -161,7 +161,6 @@ sjPlot::tab_model(null1)
 
 ```
 
-
 ## Interpersonal accuracy for thoughts, affect, and personality traits
 
 In order to decompose the variance in interpersonal accuracy and compare across accuracy measures I ran a series of baseline variance decomposition models on the accuracy measures. All analyses were conducted in R’s lme4 package (Bates et al., 2013).
@@ -175,8 +174,19 @@ SAM1 <- lmer(ptrait ~ targSRrC + AvgtraitC +
                 (1 | DyUn), 
               data = samdata)
 
-summary(SAM1)
-(SAM1)
+sjPlot::tab_model(SAM1)
+
+## save random effects
+lapply(ranef(SAM1), write.table, 
+       append = TRUE, 
+       file = "raneff from SAM1 for TRT.csv")
+
+## extract empirical bayesian estimates
+EBTRTtar <- ranef(SAM1)$TarUn
+colnames(EBTRTtar)<-c("Intercept","TSR","Norm")
+EBTRTtar$TarUn<-as.numeric(row.names(EBTRTtar))
+summary(EBTRTtar)
+sapply(EBTRTtar,sd)
 
 ## fit a model for each perceiver
 models_dyad <- 
