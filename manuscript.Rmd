@@ -23,7 +23,53 @@ options(scipen = 999)
 ```
 
 
-```{r message = FALSE, results = 'hide'}
+```{r message=FALSE, include=FALSE, results='hide'}
 library(tidyverse)
 ```
+
+# Introduction
+  As the saying goes, “it takes two to tango,” and interpersonal perception might be considered the social-cognitive equivalent of such a complex dance between perceivers (who make interpersonal judgments) and targets (who are judged). Even very brief interpersonal interactions are rich exchanges where targets emit behavior and cues via numerous channels. Thus it follows that perceivers can and do form perceptions on a range of dimensions, varying from fleeting judgments about discrete and context-specific thoughts or feelings, to snapshot judgments that regard more global and enduring characteristics. For example, empathic accuracy researchers examine the accuracy of perceivers’ judgments of targets’ specific thoughts and feelings (Ickes, Stinson, Bissonette, & Garcia, 1990) or changes in ongoing affective states (Levenson & Ruef, 1992). Personality researchers examine the accuracy of perceivers’ judgments of targets’ traits (Funder & Colvin, 1997), as well as the accuracy of perceptions about how others judge one’s own traits (i.e., meta-perceptions; Kenny & DePaulo, 1993).
+
+
+
+# Method
+## Participants
+
+## Measures
+
+## Procedure
+
+## Analytical strategy
+
+
+
+# Results
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
