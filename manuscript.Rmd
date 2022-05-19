@@ -1,5 +1,5 @@
 ---
-title: "Target Readability in Interpersonal Accuracy"
+title: "Interpersonal Accuracy of Thoughts, Affect, and Personality Traits"
 author: "Murat Kezer"
 output: 
     html_document:
@@ -150,6 +150,44 @@ df <- list(perceiver_target_data,
   reduce(left_join)
 
 rm(list = gdata::keep(df))
+
+# select relevant variables
+df <- df %>% 
+  select(
+    PerUn:Group, # id variables
+    EA100, # emphatic accuracy (EA) for thoughts out of 100
+    sex:race_text, # demographic variables
+    strait1:strait26, # perceivers' self-reported personality traits
+    imp1:imp16, # rapport during the interaction
+    ptrait1:ptrait26, # perception of targets' personality traits
+    targSR1:targSR26, # targets' self-reported personality traits
+    Self1:Self120, # perceivers' self-reported continuous affect
+    Part1:Part120, # perception of targets'continuous affect
+    TargSR1:TargSR120, # targets' self-reported continuous affect
+    as1:as13, # attachment styles
+    auth1:auth12rc, # authenticity
+    mask1:mask13, # masking
+    ntb1:ntb10, # need to belong
+    ucla1:ucla20rc, # ucla loneliness scale
+    fne1:fne12, # fear of negative evaluation
+    beq1:beq16, # berkeley expressivity questionnaire
+    erq1:erq10, # emotion regulation (expressive suppression)
+    rse1:rse10rc, # rosenberg self-esteem
+    sat1:sat5, # satistaction with life
+    pow1:pow8, # sense of power
+    sias1:sias12, # social interaction anxiety scale
+    InsecAtt:SIAPSc, # composite variables
+    InformantTot, # number of informants for targets
+    strait4rc:strait25rc, # perceivers' traits reversed and centered
+    Extr:Trust, # composite variables for personality traits
+    itrait1:itrait26, # informant reports of targets' personality traits
+    per_InsecAtt_INFmeanC:per_Trust_INFmeanC # informant reports 
+  ) %>% 
+  arrange(PerUn, TarUn, DyUn, Group)
+
+# rename variables for a final time
+
+
 ```
 
 ## Descriptive statistics
