@@ -98,7 +98,7 @@ Similar to decomposing overall accuracy into normative and distinctive component
 
 ```{r, include = FALSE}
 # import functions
-source("functions.R")
+source("functions.R") #this is a cool way to use another script, thanks!
 
 # import data for exploratory predictors
 paths <- fs::dir_ls(here::here("data"))
@@ -206,6 +206,8 @@ tibble(
   mean = map_dbl(descriptive_df, mean, na.rm = TRUE),
   sd = map_dbl(descriptive_df, sd, na.rm = TRUE)
 )
+
+#this table can have the same formatting as others.
 ```
 
 Table 1 represents descriptive statistics for all the variables in the present study.
@@ -237,7 +239,7 @@ samdata <-
 null1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), 
                data = samdata)
 
-sjPlot::tab_model(null1)
+sjPlot::tab_model(null1) #nice package fot tables
 ```
 
 ```{r}
@@ -367,7 +369,9 @@ WILL WORK ON THIS LATER.
 
 
 
+<!-- Peer review -->
 
+<!-- I really liked the look and feel of your manuscript! `.tabset-fade` had a nice look. Also thanks for introducing the `source()` function and `the sjPlot::tab_model()` - I can see myself using these. Sometimes when reporting statistic and equaltions in the markdown, I prefer using the latex format. Basically by enclosing in single dollar sign or double dollar sign (puts it in a new line) So, $M_{age}$, or $$M_{age}$$. Good luck with the manuscript.  -->
 
 
 
