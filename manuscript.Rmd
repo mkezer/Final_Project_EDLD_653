@@ -25,7 +25,7 @@ options(scipen = 999)
 
 ```{r message=FALSE, include=FALSE, results='hide'}
 library(tidyverse)
-library(lme4)
+library(lme4) #Don't know why, but this wasn't immediately working
 library(lmerTest)
 library(rio)
 ```
@@ -265,7 +265,7 @@ SRMdat1 <- lmer(EA100 ~
                    (1|Group), 
                  data = eaSRMdata)
 
-sjPlot::tab_model(SRMdat1)
+sjPlot::tab_model(SRMdat1) #this is really cool
 ```
 
 ## Interpersonal accuracy
