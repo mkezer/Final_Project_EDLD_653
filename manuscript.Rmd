@@ -92,9 +92,13 @@ These data were modeled using the Social Relations Model (SRM; Kashy & Kenny, 19
 
 Similar to decomposing overall accuracy into normative and distinctive components in the SAM analyses, baseline accuracy scores were calculated (see above for details) in order to estimate how much of the perceivers’ overall thought accuracy is attributable to making correct inferences based on general knowledge and/or stereotypes. Empathic accuracy scores were divided into normative (baseline accuracy) and distinctive accuracy (overall accuracy corrected for baseline accuracy) and SRM analyses were conducted on each component separately.  
 
+> This project is really fabulously done - the output is very clear and readable. If you're planning on continuing the manuscript in r, have you thought about using [Pandoc](https://pandoc.org/MANUAL.html#citations) as your citation manager? I don't know if it's worth the learning curve from what I know about your relationship to these data, but it may be something to check out if you want :-)
+
 # Results {.tabset .tabset-fade}
 
 **THIS IS A VERY ROUGH DRAFT :) **
+
+> Sourcing your functions from a separate R script is a really good idea - it helps clean your code AND makes the functions easier to find (a problem I have when I have more than 2 in a script)
 
 ```{r, include = FALSE}
 # import functions
@@ -111,7 +115,7 @@ walk2(df_names, paths, ~{
 
 # Make variable types/names congruent for merging
 # rename
-library(magrittr)
+require(magrittr) # If this is a late addition, I assume you'll put it up with your other libraries , but if you need specifically magrittr for the following scripts, I wonder if require() will make this more reproducible?
 ind_diffs_self %<>% 
   rename(PerUn = SubNum)
 
@@ -148,6 +152,7 @@ df <- list(perceiver_target_data,
            informant_bfi,
            aggregated_informant_data) %>% 
   reduce(left_join)
+
 
 rm(list = gdata::keep(df))
 
@@ -203,12 +208,14 @@ df %>%
 table1 <-
 tibble(
   var = names(descriptive_df),
-  mean = map_dbl(descriptive_df, mean, na.rm = TRUE),
-  sd = map_dbl(descriptive_df, sd, na.rm = TRUE)
-)
+  mean = map_dbl(descriptive_df, mean, na.rm = TRUE) %>% round(., 2),
+  sd = map_dbl(descriptive_df, sd, na.rm = TRUE) %>% round(., 2),
+) %>% knitr::kable()
 ```
 
 Table 1 represents descriptive statistics for all the variables in the present study.
+
+> I know you already know about Kable, but I added it (and rounded the data) above because it was a simple addition - feel free to keep or not (obviously).
 
 ```{r}
 table1
@@ -272,6 +279,8 @@ sjPlot::tab_model(SRMdat1)
 
 In order to decompose the variance in interpersonal accuracy and compare across accuracy measures I ran a series of baseline variance decomposition models on the accuracy measures. All analyses were conducted in R’s lme4 package (Bates et al., 2013).
 
+> These analyses are really solid anaylitic work and I'm very excited to see where they go from here! You'll know better than I what you want to do with these, but can the emmeans package be useful for lmer objects? I've only used it with glm objects but *love* its simplicity :)
+
 ```{r}
 # personality
 ## final model
@@ -310,7 +319,6 @@ samdata %>%
 
     lm(ptrait ~ targSRrC + AvgtraitC,
               data = .x)
-
   }
                       )
          )
