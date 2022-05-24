@@ -96,9 +96,11 @@ Similar to decomposing overall accuracy into normative and distinctive component
 
 **THIS IS A VERY ROUGH DRAFT :) **
 
+##data cleaning is very concise and efficient!! 
+
 ```{r, include = FALSE}
 # import functions
-source("functions.R")
+source("functions.R") ## semms very useful! Made a note for myself
 
 # import data for exploratory predictors
 paths <- fs::dir_ls(here::here("data"))
@@ -297,6 +299,7 @@ map_dbl(EBTRTtar, sd)
 EBTRTper <- ranef(SAM1)$PerUn
 EBTRTper$PerUn<-as.numeric(row.names(EBTRTper))
 map_dbl(EBTRTper,sd)
+ 
 
 ## Density plots for random effects will be placed here
 
@@ -345,6 +348,8 @@ diffEASRM<- lmer(CrrctdEAnoneg ~
                     (1|DyUn) + 
                     (1|Group), 
                   data = eaSRMdata)
+
+#probably a good idea to create a function that you can reuse, especially since random effect structure is the same 
 
 sjPlot::tab_model(normEASRM, diffEASRM)
 ```
