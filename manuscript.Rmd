@@ -366,8 +366,16 @@ WILL WORK ON THIS LATER.
 
 
 
+###EK Peer Review
 
+#Strengths
+1. Reproducibility is great! Having some knitting issues with the model dyad portion, but overall the functions file and structure of the tidying and analysis are easy to follow.
+2. Using functional programming all over the place! The walk2 at the beginning of the results section is particularly nice.
+3. I don't fully understand the data or analyses that were run here, however the thorough comments were enough to get me the gist, as well as understand the functions I was not familiar with yet. 
 
+One thing I learned: use of the rm function to clean the environment, that might be helpful if you were having memory issues with the r environment. 
+
+One area that could be improved: very small, could write a wrapper function for lmer that allows you to pass the data, left side formula value, and numerator to use on the right side.
 
 
 
