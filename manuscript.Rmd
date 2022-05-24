@@ -94,8 +94,6 @@ Similar to decomposing overall accuracy into normative and distinctive component
 
 # Results {.tabset .tabset-fade}
 
-**THIS IS A VERY ROUGH DRAFT :) **
-
 ```{r, include = FALSE}
 # import functions
 source("functions.R")
@@ -186,6 +184,7 @@ df <- df %>%
   arrange(PerUn, TarUn, DyUn, Group)
 
 # rename variables for a final time
+ids <- paste0(c("perceiver", "target", "dyad", "group"), "id")
 
 
 ```
