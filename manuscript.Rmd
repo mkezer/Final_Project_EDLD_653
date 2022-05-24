@@ -28,6 +28,7 @@ library(tidyverse)
 library(lme4)
 library(lmerTest)
 library(rio)
+library(magrittr)
 ```
 
 # Introduction
@@ -109,7 +110,6 @@ walk2(df_names, paths, ~{
 
 # Make variable types/names congruent for merging
 # rename
-library(magrittr)
 ind_diffs_self %<>% 
   rename(PerUn = SubNum)
 
@@ -155,8 +155,8 @@ df <- df %>%
     PerUn:Group, # id variables
     EA100, # emphatic accuracy (EA) for thoughts out of 100
     sex:race_text, # demographic variables
-    strait1:strait26, # perceivers' self-reported personality traits
     imp1:imp16, # rapport during the interaction
+    strait1:strait26, # perceivers' self-reported personality traits
     ptrait1:ptrait26, # perception of targets' personality traits
     targSR1:targSR26, # targets' self-reported personality traits
     Self1:Self120, # perceivers' self-reported continuous affect
@@ -176,7 +176,6 @@ df <- df %>%
     sias1:sias12, # social interaction anxiety scale
     InsecAtt:SIAPSc, # composite variables
     InformantTot, # number of informants for targets
-    strait4rc:strait25rc, # perceivers' traits reversed and centered
     Extr:Trust, # composite variables for personality traits
     itrait1:itrait26, # informant reports of targets' personality traits
     per_InsecAtt_INFmeanC:per_Trust_INFmeanC # informant reports 
@@ -184,7 +183,19 @@ df <- df %>%
   arrange(PerUn, TarUn, DyUn, Group)
 
 # rename variables for a final time
-ids <- paste0(c("perceiver", "target", "dyad", "group"), "id")
+ids <- paste(c("perceiver", "target", "dyad", "group"), "id", sep = "_")
+rapport <- paste0("rapport", 1:16)
+personality <- map(c("perceiver_trait", "target_trait", "judgment_trait"),
+                   ~ paste0(.x, 1:26)) |> unlist()
+affect <- map(c("perceiver_affect", "target_affect", "judgment_affect"),
+              ~ paste0(.x, 1:120)) |> unlist()
+sbw <- paste0("swb", 1:5)
+informant <- paste0("informant_trait", 1:26)
+
+df <- df %>% 
+  rename_at(vars(c(PerUn:Group, imp1:imp16, strait1:TargSR120, sat1:sat5,
+                 itrait1:itrait26)),  ~
+            c(ids, rapport, personality, affect, sbw, informant))
 
 
 ```
