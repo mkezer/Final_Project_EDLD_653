@@ -97,7 +97,7 @@ Similar to decomposing overall accuracy into normative and distinctive component
 
 ```{r, include = FALSE}
 # import functions
-source("functions.R")
+source("functions.R") # good idea to source functions here~
 
 # import data for exploratory predictors
 paths <- fs::dir_ls(here::here("data"))
@@ -247,7 +247,7 @@ samdata <-
 null1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), 
                data = samdata)
 
-sjPlot::tab_model(null1)
+sjPlot::tab_model(null1) # Good to see that you are using this package. Tables look neat!
 ```
 
 ```{r}
