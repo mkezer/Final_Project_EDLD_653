@@ -1,3 +1,20 @@
+# Reliability
+get_reliability <- function(df = df, vars, var_names){
+  
+  alphas <- psych::alpha(df[vars])$total$raw_alpha %>% round(., 2)
+  omegas <- psych::omega(df[vars])$omega.tot %>% 
+    round(., 2) %>% 
+    suppressWarnings()
+  
+  data.frame(
+    
+    vars = var_names,
+    alpha = alphas,
+    omega = omegas
+  )
+  
+}
+
 # STANDARD ERROR
 std <- function(x) sd(x)/sqrt(length(x))
 
