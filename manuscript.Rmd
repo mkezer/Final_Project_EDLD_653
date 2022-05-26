@@ -215,12 +215,13 @@ tibble(
   var = names(descriptive_df),
   mean = map_dbl(descriptive_df, mean, na.rm = TRUE),
   sd = map_dbl(descriptive_df, sd, na.rm = TRUE)
-)
+) 
 ```
 
 Table 1 represents descriptive statistics for all the variables in the present study.
 
 ```{r}
+# Peer Review: Perhaps you can use a package like the "gt" package to format the table 
 table1
 ```
 
@@ -357,6 +358,8 @@ diffEASRM<- lmer(CrrctdEAnoneg ~
                   data = eaSRMdata)
 
 sjPlot::tab_model(normEASRM, diffEASRM)
+
+#PEER REVIEW: I notice you are writing very similar models across different outcomes, is there an option to create a function and reduce some of the repetitive code?
 ```
 
 ## Predictors of interpersonal accuracy
@@ -374,6 +377,7 @@ WILL WORK ON THIS LATER.
 # Author Note
 "This project was completed by Dr. Karyn Lewis in 2014. Introduction and method sections are mostly copied from Dr. Lewis' dissertation, which were adapted and edited for the current project."
 
+#PEER REVIEW: Random note, I used to work with Dr. Karyn Lewis when she was at Education Northwes :) 
 
 
 
