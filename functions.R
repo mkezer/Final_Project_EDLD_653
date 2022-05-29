@@ -15,6 +15,9 @@ get_reliability <- function(df = df, vars, var_names){
   
 }
 
+# Subtract 8 for reverse coding
+subtract_8 <- function(x) {8 - x}
+
 # STANDARD ERROR
 std <- function(x) sd(x)/sqrt(length(x))
 

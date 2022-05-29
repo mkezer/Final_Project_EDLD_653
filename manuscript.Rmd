@@ -204,11 +204,33 @@ psych::describe(df[-9]) %>%
   filter(max == 99) %>% 
   select(rowname)
 
-df2 <-  
+df <-  
 df %>% 
   mutate(
     across(recode_99s$rowname, ~ na_if(.x, 99))
   )
+
+# reverse coding
+negative_keyed_items <- c('perceiver_trait15', 'perceiver_trait8',
+                          'perceiver_trait21', 'perceiver_trait25',
+                          'perceiver_trait10', 'perceiver_trait18',
+                          'perceiver_trait4', 'perceiver_trait16',
+                          'target_trait15', 'target_trait8',
+                          'target_trait21', 'target_trait25',
+                          'target_trait10', 'target_trait18',
+                          'target_trait4', 'target_trait16',
+                          'judgment_trait15', 'judgment_trait8',
+                          'judgment_trait21', 'judgment_trait25',
+                          'judgment_trait10', 'judgment_trait18',
+                          'judgment_trait4', 'judgment_trait16')
+
+df <- 
+df %>% 
+  mutate(
+    across(all_of(negative_keyed_items), subtract_8)
+  )
+
+
 ```
 
 ## Descriptive statistics
