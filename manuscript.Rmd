@@ -229,8 +229,6 @@ df %>%
   mutate(
     across(all_of(negative_keyed_items), subtract_8)
   )
-
-
 ```
 
 ## Descriptive statistics
@@ -250,6 +248,22 @@ tibble(
   mean = map_dbl(descriptive_df, mean, na.rm = TRUE),
   sd = map_dbl(descriptive_df, sd, na.rm = TRUE)
 )
+
+# internal consistency
+source("items_reliability.R")
+
+df_desc <- df %>% 
+  distinct(perceiver_id)
+
+map2_dfr(item_list, variable_names, ~ 
+           get_reliability(df = df_desc, 
+                           vars = .x, 
+                           var_names = .y)
+         )
+
+df %>% 
+  select(rse1:rse10rc) %>% 
+  names()
 ```
 
 Table 1 represents descriptive statistics for all the variables in the present study.
