@@ -186,9 +186,9 @@ df <- df %>%
 ids <- paste(c("perceiver", "target", "dyad", "group"), "id", sep = "_")
 rapport <- paste0("rapport", 1:16)
 personality <- map(c("perceiver_trait", "target_trait", "judgment_trait"),
-                   ~ paste0(.x, 1:26)) |> unlist()
+                   ~ paste0(.x, 1:26)) %>% unlist()
 affect <- map(c("perceiver_affect", "target_affect", "judgment_affect"),
-              ~ paste0(.x, 1:120)) |> unlist()
+              ~ paste0(.x, 1:120)) %>% unlist()
 sbw <- paste0("swb", 1:5)
 informant <- paste0("informant_trait", 1:26)
 
@@ -197,11 +197,23 @@ df <- df %>%
                  itrait1:itrait26)),  ~
             c(ids, rapport, personality, affect, sbw, informant))
 
+# recode 99s into NA
+recode_99s <- 
+psych::describe(df[-9]) %>% 
+  rownames_to_column() %>% 
+  filter(max == 99) %>% 
+  select(rowname)
 
+df2 <-  
+df %>% 
+  mutate(
+    across(recode_99s$rowname, ~ na_if(.x, 99))
+  )
 ```
 
 ## Descriptive statistics
 ```{r, include = FALSE}
+# descriptives
 descriptive_df <-
 df %>% 
   select(
