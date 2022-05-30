@@ -176,7 +176,7 @@ df <- df %>%
     sias1:sias12, # social interaction anxiety scale
     InsecAtt:SIAPSc, # composite variables
     InformantTot, # number of informants for targets
-    Extr:Trust, # composite variables for personality traits
+    Extr:Trust, # composite variables for personality traits of perceivers
     itrait1:itrait26, # informant reports of targets' personality traits
     per_InsecAtt_INFmeanC:per_Trust_INFmeanC # informant reports 
   ) %>% 
@@ -240,48 +240,41 @@ df <- left_join(df, df_reverse)
 ## Descriptive statistics
 ```{r, include = FALSE}
 # descriptives
-descriptive_df <-
+vars_desc <-
 df %>% 
   select(
     InsecAtt, AnxAtt, AvoAtt, Authenticity, Mask, NTB, Loneliness,
     FNE, beqpos, beqneg, beqstr, erqsup, erqrea, RSE, SAT, POW,
-    SIAS, SPS, SIAPS, Extr, Agree, Consc, Neurot, Open
-  )
-
-table1 <-
-tibble(
-  var = names(descriptive_df),
-  mean = map_dbl(descriptive_df, mean, na.rm = TRUE),
-  sd = map_dbl(descriptive_df, sd, na.rm = TRUE)
-)
-
-# internal consistency
-source("items_reliability.R")
+    SIAS, SPS, Open, Consc, Extr, Agree, Neurot, Intell, Trust
+  ) %>% 
+  names()
 
 df_desc <- df %>% 
   distinct(perceiver_id, 
            .keep_all = TRUE)
 
+tab_desc <-  get_descriptives(df_desc[vars_desc])
+
+# internal consistency
+source("items_reliability.R")
+
+int_cons <- 
 map2_dfr(item_list, variable_names, ~ 
            get_reliability(df = df_desc, 
                            items = .x, 
                            var_names = .y)
          )
+
+# table 1
+table1 <- bind_cols(tab_desc, int_cons) %>% 
+  select(Variables = vars, N_Valid:Max, Alpha:Omega)
 ```
-
-per_open, per_cons, per_extra, per_agre, per_neur,
-per_intel, per_trust,
-tar_open, tar_cons, tar_extra, tar_agre, tar_neur,
-tar_intel, tar_trust,
-judg_open, judg_cons, judg_extra, judg_agre, judg_neur,
-judg_intel, judg_trust
-
-
 
 Table 1 represents descriptive statistics for all the variables in the present study.
 
 ```{r}
-table1
+kable_style(table1, 
+            title = "<center><b>Table 1: Descriptive Statistics and Internal Consistency</center></b>")
 ```
 
 ## Variance decomposition

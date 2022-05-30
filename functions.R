@@ -5,15 +5,16 @@ get_reliability <- function(df, items, var_names){
     round(., 2) %>% 
     suppressWarnings()
   
-  omegas <- psych::omega(df[items], plot = FALSE)$omega.tot %>% 
+  omegas <- psych::omega(df[items], plot = FALSE, nfactors = 1)$omega.tot %>% 
     round(., 2) %>% 
-    suppressWarnings()
+    suppressWarnings() %>% 
+    suppressMessages()
   
   data.frame(
     
     vars = var_names,
-    alpha = alphas,
-    omega = omegas
+    Alpha = alphas,
+    Omega = omegas
   )
   
 }
@@ -25,13 +26,23 @@ subtract_8 <- function(x) {8 - x}
 std <- function(x) sd(x)/sqrt(length(x))
 
 # SUMMARY FUNCTION
-get_descrip <- function(dat, var1){
-  dat %>% summarize(n = n(),
-                    mean = mean(var1, na.rm = TRUE), 
-                    sd = sd(var1, na.rm = TRUE),
-                    median = median(var1, na.rm = TRUE),
-                    min = min(var1, na.rm = TRUE),
-                    max = max(var1, na.rm = TRUE))
+get_desc <- list(
+  
+  N_Valid = function(var) {sum(complete.cases(var))},
+  Mean = function(var) {round(mean(var, na.rm = TRUE), 2)},
+  SD = function(var) {round(sd(var, na.rm = TRUE), 2)},
+  Min = function(var) {round(min(var, na.rm = TRUE), 2)},
+  Max = function(var) {round(max(var, na.rm = TRUE), 2)}
+  
+)
+
+get_desc2 <- 
+  function(column) {
+    map_df(get_desc, ~.x(column))
+  }
+
+get_descriptives <- function(df) {
+  map_df(df, get_desc2, .id = "column")
 }
 
 # SUMMARY FUNCTION by GROUP
@@ -48,14 +59,14 @@ group_means <- function(data, outcome, ...) {
 }  
 
 # KABLE STYLING
-kable_style <- function(data){
+kable_style <- function(data, title){
   
   data <- as_tibble(data)
   
-  kable(data, digits = 2, align = "c") %>% 
-    kable_styling(bootstrap_options = c("striped"),
-                  full_width = FALSE) %>% 
-    row_spec(0, background = "gray", color = "white")  
+  knitr::kable(data, digits = 2, align = "c", caption = title) %>% 
+    kableExtra::kable_styling(bootstrap_options = c("striped"),
+                              full_width = FALSE) %>% 
+    kableExtra::row_spec(0, background = "gray", color = "white")  
   
 }
 
