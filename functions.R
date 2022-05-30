@@ -1,8 +1,11 @@
 # Reliability
-get_reliability <- function(df = df, vars, var_names){
+get_reliability <- function(df, items, var_names){
   
-  alphas <- psych::alpha(df[vars])$total$raw_alpha %>% round(., 2)
-  omegas <- psych::omega(df[vars])$omega.tot %>% 
+  alphas <- psych::alpha(df[items], check.keys = TRUE)$total$raw_alpha %>% 
+    round(., 2) %>% 
+    suppressWarnings()
+  
+  omegas <- psych::omega(df[items], plot = FALSE)$omega.tot %>% 
     round(., 2) %>% 
     suppressWarnings()
   

@@ -96,9 +96,6 @@ Similar to decomposing overall accuracy into normative and distinctive component
 # Results {.tabset .tabset-fade}
 
 ```{r, include = FALSE}
-# import functions
-source("functions.R")
-
 # import data for exploratory predictors
 paths <- fs::dir_ls(here::here("data"))
 df_names <- gsub(".+data/(.+)\\.sav", "\\1", paths)
@@ -148,6 +145,9 @@ df <- list(perceiver_target_data,
   reduce(left_join)
 
 rm(list = gdata::keep(df))
+
+# import functions
+source("functions.R")
 
 # select relevant variables
 df <- df %>% 
@@ -224,11 +224,17 @@ negative_keyed_items <- c('perceiver_trait15', 'perceiver_trait8',
                           'judgment_trait10', 'judgment_trait18',
                           'judgment_trait4', 'judgment_trait16')
 
-df <- 
-df %>% 
-  mutate(
-    across(all_of(negative_keyed_items), subtract_8)
-  )
+df_reverse <- 
+  df %>% 
+  select(perceiver_id:group_id,
+         negative_keyed_items)
+
+df_reverse <- 
+df_reverse %>% 
+  mutate(across(all_of(negative_keyed_items), subtract_8)) %>% 
+  rename_at(vars(negative_keyed_items), ~ paste0(negative_keyed_items, "rc"))
+
+df <- left_join(df, df_reverse)
 ```
 
 ## Descriptive statistics
@@ -253,18 +259,24 @@ tibble(
 source("items_reliability.R")
 
 df_desc <- df %>% 
-  distinct(perceiver_id)
+  distinct(perceiver_id, 
+           .keep_all = TRUE)
 
 map2_dfr(item_list, variable_names, ~ 
            get_reliability(df = df_desc, 
-                           vars = .x, 
+                           items = .x, 
                            var_names = .y)
          )
-
-df %>% 
-  select(rse1:rse10rc) %>% 
-  names()
 ```
+
+per_open, per_cons, per_extra, per_agre, per_neur,
+per_intel, per_trust,
+tar_open, tar_cons, tar_extra, tar_agre, tar_neur,
+tar_intel, tar_trust,
+judg_open, judg_cons, judg_extra, judg_agre, judg_neur,
+judg_intel, judg_trust
+
+
 
 Table 1 represents descriptive statistics for all the variables in the present study.
 

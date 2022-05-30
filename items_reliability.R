@@ -130,6 +130,3 @@ variable_names <- list("Insecure Attachment",
                        'Judgment Neuroticism',
                        'Judgment Intelligence',
                        'Judgment Trustworthiness')
-
-
-
