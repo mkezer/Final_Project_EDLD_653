@@ -1,4 +1,6 @@
 # items
+rapport <- c(paste0('rapport', 1:11),
+             paste0('rapport', 12:15, '_rc'))
 insecure_att <- c("as1rc", "as2", "as3rc", "as4rc", "as5")
 avoid_att <- c("as6", "as7", "as8", "as9")
 anx_att <- c("as10", "as11", "as12rc", "as13")
@@ -53,14 +55,15 @@ per_intel <- c('perceiver_trait2', 'perceiver_trait17', 'perceiver_trait24')
 per_trust <- c('perceiver_trait5', 'perceiver_trait11')
 
 ## lists
-item_list <- list(insecure_att, avoid_att, anx_att, authenticity,
+item_list <- list(rapport, insecure_att, avoid_att, anx_att, authenticity,
                   masking, ntb, loneliness, fne, pos_express,
                   neg_express, impulse_str, suppression, reappraisal,
                   s_esteem, swb, sense_of_power, si_anx, s_phobia,
                   per_open, per_cons, per_extra, per_agre, per_neur,
                   per_intel, per_trust)
 
-variable_names <- list("Insecure Attachment", 
+variable_names <- list("Rapport",
+                       "Insecure Attachment", 
                        "Avoidant Attachment",
                        "Anxious Attachment",
                        "Authenticity",

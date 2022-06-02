@@ -222,7 +222,9 @@ negative_keyed_items <- c('perceiver_trait15', 'perceiver_trait8',
                           'judgment_trait15', 'judgment_trait8',
                           'judgment_trait21', 'judgment_trait25',
                           'judgment_trait10', 'judgment_trait18',
-                          'judgment_trait4', 'judgment_trait16')
+                          'judgment_trait4', 'judgment_trait16',
+                          'rapport12', 'rapport13', 'rapport14',
+                          'rapport15')
 
 
 df <- 
@@ -231,6 +233,20 @@ df <-
             .vars = vars(negative_keyed_items)
             )
 
+# composite var for rapport
+df <- 
+  df %>% 
+  mutate(rapport = rowMeans(select(., 
+                                   rapport1:rapport11,
+                                   rapport12_rc:rapport15_rc),
+                            na.rm = TRUE),
+         # other composite variables are scaled to 0-100
+         rapport = rapport - 1,
+         rapport = rapport/7 * 100,
+         rapport_c = scale(rapport, scale = FALSE)
+         ) %>% 
+  relocate(rapport, .before = informant_trait1) %>% 
+  relocate(rapport_c, .before = rapport)
 ```
 
 ## Descriptive statistics
@@ -239,7 +255,7 @@ df <-
 vars_desc <-
 df %>% 
   select(
-    InsecAtt, AnxAtt, AvoAtt, Authenticity, Mask, NTB, Loneliness,
+    rapport, InsecAtt, AnxAtt, AvoAtt, Authenticity, Mask, NTB, Loneliness,
     FNE, beqpos, beqneg, beqstr, erqsup, erqrea, RSE, SAT, POW,
     SIAS, SPS, Open, Consc, Extr, Agree, Neurot, Intell, Trust
   ) %>% 
@@ -277,7 +293,43 @@ kable_style(table1,
 
 ```{r, include = FALSE}
 # Create, clean and format data for analyses
-## Personality
+
+## Personality (self- AND informant-reports of targets)
+df_personality <-
+  df %>% 
+  select(perceiver_id:group_id,
+         judgment_trait1:target_trait26,
+         informant_trait1:informant_trait26,
+         InsecAtt:Trust, -ends_with("C"), -ASMtot, -beqtot, -SIAPS)
+
+trait_norms <- # average value for each trait
+df_personality %>% 
+  select(target_trait1:informant_trait26) %>% 
+  map_df(., mean, na.rm = TRUE) %>% 
+  pivot_longer(., cols = everything(), 
+               names_to = "item",
+               names_pattern = "(\\d+)$",
+               values_to = "norm") %>% 
+  mutate(type = c(rep("self_norm", 26), rep("inf_norm", 26))) %>% 
+  pivot_wider(names_from = "type", 
+              values_from = "norm") %>% 
+  mutate(item = as.numeric(item))
+
+df_personality <- 
+df_personality %>% 
+  pivot_longer(cols = judgment_trait1:informant_trait26,
+               names_to = c("trait", "item"),
+               names_sep = "_",
+               values_to = "rating") %>% 
+  mutate(item = parse_number(item)) %>% # could not write the correct regex :(
+  pivot_wider(names_from = "trait",
+              values_from = "rating") %>% 
+  right_join(., trait_norms, by = "item") %>% 
+  mutate(self_dist = target - self_norm,
+         inf_dist = informant - inf_norm,
+         across(c(InsecAtt:Trust, self_norm:inf_dist), 
+                scale, scale = FALSE, center = TRUE)
+         )
 
 
 
@@ -285,27 +337,12 @@ kable_style(table1,
 
 
 ```{r}
-# personality
-df_personality <- import(here::here("data", "samdata.csv"))
-
-df_personality <-
-  df_personality %>% 
-  mutate(
-    
-    Avgtrait = Avgtrait - 1,
-    targSRr = targSR - Avgtrait,
-    
-    # Note to self: use a loop for these.
-    targSRrC = scale(targSRr, scale = FALSE, center = TRUE),
-    AvgtraitC = scale(Avgtrait, scale = FALSE, center = TRUE),
-    ptraitC = scale(ptrait, scale = FALSE, center = TRUE)
-  )
-
-## null model
-null1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), 
-               data = df_personality)
-
-sjPlot::tab_model(null1)
+null_trait_self <- lmer(judgment ~ 
+                (1|perceiver_id) + 
+                (1|target_id) + 
+                (1|dyad_id) +
+                (1|group_id),
+              data = df_personality)
 ```
 
 ```{r}
