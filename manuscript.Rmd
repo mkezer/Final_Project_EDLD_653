@@ -185,7 +185,7 @@ df <- df %>%
 # rename variables for a final time
 ids <- paste(c("perceiver", "target", "dyad", "group"), "id", sep = "_")
 rapport <- paste0("rapport", 1:16)
-personality <- map(c("perceiver_trait", "target_trait", "judgment_trait"),
+personality <- map(c("perceiver_trait", "judgment_trait", "target_trait"),
                    ~ paste0(.x, 1:26)) %>% unlist()
 affect <- map(c("perceiver_affect", "target_affect", "judgment_affect"),
               ~ paste0(.x, 1:120)) %>% unlist()
@@ -224,17 +224,13 @@ negative_keyed_items <- c('perceiver_trait15', 'perceiver_trait8',
                           'judgment_trait10', 'judgment_trait18',
                           'judgment_trait4', 'judgment_trait16')
 
-df_reverse <- 
+
+df <- 
   df %>% 
-  select(perceiver_id:group_id,
-         negative_keyed_items)
+  mutate_at(list(rc = ~subtract_8(.)),
+            .vars = vars(negative_keyed_items)
+            )
 
-df_reverse <- 
-df_reverse %>% 
-  mutate(across(all_of(negative_keyed_items), subtract_8)) %>% 
-  rename_at(vars(negative_keyed_items), ~ paste0(negative_keyed_items, "rc"))
-
-df <- left_join(df, df_reverse)
 ```
 
 ## Descriptive statistics
@@ -270,7 +266,7 @@ table1 <- bind_cols(tab_desc, int_cons) %>%
   select(Variables = vars, N_Valid:Max, Alpha:Omega)
 ```
 
-Table 1 represents descriptive statistics for all the variables in the present study.
+Table 1 represents descriptive statistics as well as internal consistency metrics (i.e., alpha and omega) for predictors of interpersonal accuracy.
 
 ```{r}
 kable_style(table1, 
@@ -279,12 +275,21 @@ kable_style(table1,
 
 ## Variance decomposition
 
+```{r, include = FALSE}
+# Create, clean and format data for analyses
+## Personality
+
+
+
+```
+
+
 ```{r}
 # personality
-samdata <- import(here::here("data", "samdata.csv"))
+df_personality <- import(here::here("data", "samdata.csv"))
 
-samdata <-
-  samdata %>% 
+df_personality <-
+  df_personality %>% 
   mutate(
     
     Avgtrait = Avgtrait - 1,
@@ -298,7 +303,7 @@ samdata <-
 
 ## null model
 null1 <- lmer (ptrait ~ (1|PerUn) + (1|TarUn) + (1|DyUn) + (1|Group), 
-               data = samdata)
+               data = df_personality)
 
 sjPlot::tab_model(null1)
 ```
@@ -310,10 +315,13 @@ samEACaggdata <- import(here::here("data", "c_affect.csv"))
 samEAC_null <- lmer (Part ~ 1 + 
                   (1|PerUn) + 
                   (1|TarUn) + 
-                  (1|DyUn), 
+                  (1|DyUn) +
+                    (1|Group), 
                 data = samEACaggdata)
 
 sjPlot::tab_model(samEAC_null)
+
+summary(samEAC_null)
 ```
 
 ```{r}

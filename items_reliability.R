@@ -40,15 +40,15 @@ si_anx <- paste0('sias', 1:6)
 s_phobia <- paste0('sias', 7:12)
 
 per_open <- c('perceiver_trait13', 'perceiver_trait22')
-per_cons <- c('perceiver_trait6', 'perceiver_trait15rc',
+per_cons <- c('perceiver_trait6', 'perceiver_trait15_rc',
               'perceiver_trait19', 'perceiver_trait26')
 per_extra <- c('perceiver_trait1', 'perceiver_trait3', 'perceiver_trait7',
-               'perceiver_trait8rc', 'perceiver_trait9', 
-               'perceiver_trait21rc', 'perceiver_trait25rc')
-per_agre <- c('perceiver_trait10rc', 'perceiver_trait14',
-              'perceiver_trait18rc', 'perceiver_trait23')
-per_neur <- c('perceiver_trait4rc', 'perceiver_trait12', 
-              'perceiver_trait16rc', 'perceiver_trait20')
+               'perceiver_trait8_rc', 'perceiver_trait9', 
+               'perceiver_trait21_rc', 'perceiver_trait25_rc')
+per_agre <- c('perceiver_trait10_rc', 'perceiver_trait14',
+              'perceiver_trait18_rc', 'perceiver_trait23')
+per_neur <- c('perceiver_trait4_rc', 'perceiver_trait12', 
+              'perceiver_trait16_rc', 'perceiver_trait20')
 per_intel <- c('perceiver_trait2', 'perceiver_trait17', 'perceiver_trait24')
 per_trust <- c('perceiver_trait5', 'perceiver_trait11')
 
