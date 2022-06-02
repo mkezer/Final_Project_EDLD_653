@@ -315,7 +315,7 @@ df_personality %>%
               values_from = "norm") %>% 
   mutate(item = as.numeric(item))
 
-df_personality <- 
+df_personality <- # create final df for analyses
 df_personality %>% 
   pivot_longer(cols = judgment_trait1:informant_trait26,
                names_to = c("trait", "item"),
@@ -330,6 +330,36 @@ df_personality %>%
          across(c(InsecAtt:Trust, self_norm:inf_dist), 
                 scale, scale = FALSE, center = TRUE)
          )
+## Affect
+df_affect <- 
+  df %>% 
+  select(perceiver_id:group_id,
+         target_affect1:judgment_affect120)
+
+affect_norms <- # average values
+  df_affect %>% 
+  select(target_affect1:target_affect120) %>% 
+  map_df(., mean, na.rm = TRUE) %>% 
+  pivot_longer(., cols = everything(),
+               names_to = "item",
+               names_pattern = "(\\d+)$",
+               values_to = "norm") %>% 
+  mutate(item = as.numeric(item))
+
+df_affect <- 
+  df_affect %>% 
+  pivot_longer(cols = target_affect1:judgment_affect120,
+               names_to = c("affect", "item"),
+               names_sep = "_",
+               values_to = "rating") %>% 
+  mutate(item = parse_number(item)) %>% 
+  pivot_wider(names_from = "affect",
+              values_from = "rating") %>% 
+  right_join(., affect_norms, by = "item") %>% 
+  mutate(self_dist = target - norm,
+         across(norm:self_dist, scale, scale = FALSE, center = TRUE)
+         )
+
 
 
 
