@@ -174,9 +174,10 @@ df <- df %>%
     sat1:sat5, # satistaction with life
     pow1:pow8, # sense of power
     sias1:sias12, # social interaction anxiety scale
-    InsecAtt:SIAPSc, # composite variables
-    InformantTot, # number of informants for targets
-    Extr:Trust, # composite variables for personality traits of perceivers
+    # composite variables
+    InsecAtt, AnxAtt, AvoAtt, Authenticity, Mask, NTB, Loneliness,
+    FNE, beqpos, beqneg, beqstr, erqsup, erqrea, RSE, SAT, POW,
+    SIAS, SPS, Open, Consc, Extr, Agree, Neurot, Intell, Trust, 
     itrait1:itrait26, # informant reports of targets' personality traits
     per_InsecAtt_INFmeanC:per_Trust_INFmeanC # informant reports 
   ) %>% 
@@ -233,6 +234,12 @@ df <-
             .vars = vars(negative_keyed_items)
             )
 
+# centering
+df <- 
+  df %>% 
+  mutate_at(list(c = ~center(.)),
+            .vars = vars(InsecAtt:Trust))
+
 # composite var for rapport
 df <- 
   df %>% 
@@ -245,8 +252,7 @@ df <-
          rapport = rapport/7 * 100,
          rapport_c = scale(rapport, scale = FALSE)
          ) %>% 
-  relocate(rapport, .before = informant_trait1) %>% 
-  relocate(rapport_c, .before = rapport)
+  relocate(rapport, .before = informant_trait1)
 ```
 
 ## Descriptive statistics
@@ -300,7 +306,7 @@ df_personality <-
   select(perceiver_id:group_id,
          judgment_trait1:target_trait26,
          informant_trait1:informant_trait26,
-         InsecAtt:Trust, -ends_with("C"), -ASMtot, -beqtot, -SIAPS)
+         InsecAtt_c:rapport_c)
 
 trait_norms <- # average value for each trait
 df_personality %>% 
@@ -326,47 +332,54 @@ df_personality %>%
               values_from = "rating") %>% 
   right_join(., trait_norms, by = "item") %>% 
   mutate(self_dist = target - self_norm,
-         inf_dist = informant - inf_norm,
-         across(c(InsecAtt:Trust, self_norm:inf_dist), 
-                scale, scale = FALSE, center = TRUE)
+         inf_dist = informant - inf_norm
          )
+
 ## Affect
 df_affect <- 
   df %>% 
   select(perceiver_id:group_id,
-         target_affect1:judgment_affect120)
+         target_affect1:judgment_affect120,
+         InsecAtt_c:rapport_c)
 
 affect_norms <- # average values
   df_affect %>% 
   select(target_affect1:target_affect120) %>% 
   map_df(., mean, na.rm = TRUE) %>% 
   pivot_longer(., cols = everything(),
-               names_to = "item",
+               names_to = "second",
                names_pattern = "(\\d+)$",
                values_to = "norm") %>% 
-  mutate(item = as.numeric(item))
+  mutate(second = as.numeric(second))
 
 df_affect <- 
   df_affect %>% 
   pivot_longer(cols = target_affect1:judgment_affect120,
-               names_to = c("affect", "item"),
+               names_to = c("affect", "second"),
                names_sep = "_",
                values_to = "rating") %>% 
-  mutate(item = parse_number(item)) %>% 
+  mutate(second = parse_number(second)) %>% 
   pivot_wider(names_from = "affect",
               values_from = "rating") %>% 
-  right_join(., affect_norms, by = "item") %>% 
+  right_join(., affect_norms, by = "second") %>% 
   mutate(self_dist = target - norm,
-         across(norm:self_dist, scale, scale = FALSE, center = TRUE)
+         across(norm:self_dist, center)
          )
 
-
+## Thought
+df_thought <- import(here::here("data", "d_thought.csv")) %>% 
+  select(PerUn, TarUn, DyUn, Group, BaselineEA:CrrctdEAnoneg) %>% 
+  rename_at(vars(PerUn:Group), ~ 
+              c("perceiver_id", "target_id", "dyad_id", "group_id")
+             ) %>% 
+  left_join(., select(df_personality, perceiver_id:group_id,
+                      InsecAtt:Trust, rapport_c))
 
 
 ```
 
 
-```{r}
+```{r null models}
 null_trait_self <- lmer(judgment ~ 
                 (1|perceiver_id) + 
                 (1|target_id) + 
@@ -386,14 +399,21 @@ samEAC_null <- lmer (Part ~ 1 +
                     (1|Group), 
                 data = samEACaggdata)
 
-sjPlot::tab_model(samEAC_null)
+sjPlot::tab_model(samEAC_null, null_affect)
 
 summary(samEAC_null)
+
+null_affect <- lmer(judgment ~ 1 + 
+                  (1|perceiver_id) + 
+                  (1|target_id) + 
+                  (1|dyad_id) +
+                    (1|group_id), 
+                data = df_affect)
+
 ```
 
 ```{r}
 # thought
-eaSRMdata <- import(here::here("data", "d_thought.csv"))
 
 # overall EA
 SRMdat1 <- lmer(EA100 ~ 

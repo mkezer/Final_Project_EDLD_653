@@ -22,6 +22,9 @@ get_reliability <- function(df, items, var_names){
 # Subtract 8 for reverse coding
 subtract_8 <- function(x) {8 - x}
 
+# center
+center <- function(x) {x - mean(x, na.rm = TRUE)}
+
 # SUMMARY FUNCTION
 get_desc <- list(
   
