@@ -401,19 +401,6 @@ null_models %>%
   kableExtra::pack_rows("Affect", 6, 10) %>% 
   kableExtra::pack_rows("Thought", 11, 15)
 
-by_model <- 
-null_models %>% 
-  mutate(model = c(rep("p", 5), rep("a", 5), rep("t", 5))
-         ) %>% 
-  group_by(model) %>% 
-  nest()
-
-
-map(by_model, specr::plot_variance)
-
-
-fill_color <- "#377eb8"
-
 null_models2 <- df_list %>% 
   map(
     ~ lmer(judgment ~ (1|perceiver_id) + 
@@ -422,8 +409,23 @@ null_models2 <- df_list %>%
            data = .x)
     )
 
-map(null_models2, performance::icc, by_group = TRUE)
+sjPlot::tab_model(null_models2[[1]],
+                  null_models2[[2]],
+                  null_models2[[3]], 
+                  dv.labels = c("Personality", "Affect", "Thought"))
 
+iccs <- 
+map_dfr(null_models2, performance::icc, by_group = TRUE) %>% 
+  mutate(model = c(rep("Personality", 3), 
+                   rep("Affect", 3), 
+                   rep("Thought", 3)),
+         ICC = ICC*100)
+
+iccs %>% 
+  ggplot() +
+  geom_col(aes(Group, ICC), fill = "#377eb8") +
+  facet_wrap(~model) +
+  theme_bw()
 ```
 
 ## Interpersonal accuracy
@@ -440,11 +442,6 @@ SAM1 <- lmer(ptrait ~ targSRrC + AvgtraitC +
               data = samdata)
 
 sjPlot::tab_model(SAM1)
-
-## save random effects
-lapply(ranef(SAM1), write.table, 
-       append = TRUE, 
-       file = here::here("data", "raneff from SAM1 for TRT.csv"))
 
 ## extract empirical bayesian estimates for targets
 EBTRTtar <- ranef(SAM1)$TarUn
