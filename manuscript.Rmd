@@ -332,7 +332,8 @@ df_personality %>%
               values_from = "rating") %>% 
   right_join(., trait_norms, by = "item") %>% 
   mutate(self_dist = target - self_norm,
-         inf_dist = informant - inf_norm
+         inf_dist = informant - inf_norm,
+         across(self_norm:inf_dist, center)
          )
 
 ## Affect
@@ -372,58 +373,57 @@ df_thought <- import(here::here("data", "d_thought.csv")) %>%
   rename_at(vars(PerUn:Group), ~ 
               c("perceiver_id", "target_id", "dyad_id", "group_id")
              ) %>% 
-  left_join(., select(df_personality, perceiver_id:group_id,
-                      InsecAtt:Trust, rapport_c))
+  left_join(., select(df, perceiver_id:group_id,
+                      InsecAtt_c:rapport_c)) %>% 
+  rename(judgment = EA100)
 
 
 ```
 
 
 ```{r null models}
-null_trait_self <- lmer(judgment ~ 
-                (1|perceiver_id) + 
-                (1|target_id) + 
-                (1|dyad_id) +
-                (1|group_id),
-              data = df_personality)
-```
+df_list <- list(df_personality,
+                df_affect,
+                df_thought)
 
-```{r}
-# affect
-samEACaggdata <- import(here::here("data", "c_affect.csv"))
+null_models <- df_list %>% 
+  map_dfr(
+    ~ lmer(judgment ~ (1|perceiver_id) + 
+             (1|target_id) + 
+             (1|dyad_id),
+           data = .x) %>% 
+      broom.mixed::tidy()
+    )
 
-samEAC_null <- lmer (Part ~ 1 + 
-                  (1|PerUn) + 
-                  (1|TarUn) + 
-                  (1|DyUn) +
-                    (1|Group), 
-                data = samEACaggdata)
+null_models %>% 
+  kable_style(title = "<center><b>Null Models</b></center>") %>% 
+  kableExtra::pack_rows("Personality", 1, 5) %>% 
+  kableExtra::pack_rows("Affect", 6, 10) %>% 
+  kableExtra::pack_rows("Thought", 11, 15)
 
-sjPlot::tab_model(samEAC_null, null_affect)
+by_model <- 
+null_models %>% 
+  mutate(model = c(rep("p", 5), rep("a", 5), rep("t", 5))
+         ) %>% 
+  group_by(model) %>% 
+  nest()
 
-summary(samEAC_null)
 
-null_affect <- lmer(judgment ~ 1 + 
-                  (1|perceiver_id) + 
-                  (1|target_id) + 
-                  (1|dyad_id) +
-                    (1|group_id), 
-                data = df_affect)
+map(by_model, specr::plot_variance)
 
-```
 
-```{r}
-# thought
+fill_color <- "#377eb8"
 
-# overall EA
-SRMdat1 <- lmer(EA100 ~ 
-                   (1|PerUn) + 
-                   (1|TarUn) + 
-                   (1|DyUn) + 
-                   (1|Group), 
-                 data = eaSRMdata)
+null_models2 <- df_list %>% 
+  map(
+    ~ lmer(judgment ~ (1|perceiver_id) + 
+             (1|target_id) + 
+             (1|dyad_id),
+           data = .x)
+    )
 
-sjPlot::tab_model(SRMdat1)
+map(null_models2, performance::icc, by_group = TRUE)
+
 ```
 
 ## Interpersonal accuracy
