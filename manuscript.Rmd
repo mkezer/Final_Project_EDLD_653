@@ -397,6 +397,7 @@ bind_rows(df_list, .id = "Domain") %>%
   kable_style(title = "<center><b>Number of Total Observations across Domains</b></center>")
 ```
 
+Table 2 represents the null models, and Figure 1 represents the ICCs across domains.
 
 ```{r null models}
 null_models <- df_list %>% 
@@ -432,13 +433,15 @@ map_dfr(null_models2, performance::icc, by_group = TRUE) %>%
 iccs %>% 
   ggplot() +
   geom_col(aes(Group, ICC), fill = "#377eb8") +
+  labs(title = "Figure 1. ICCs across Domains",
+       x = "") +
   facet_wrap(~model) +
   theme_bw()
 ```
 
 ## Interpersonal accuracy
 
-All analyses were conducted in R’s lme4 package (Bates et al., 2013). The
+All analyses were conducted in R’s lme4 package (Bates et al., 2013).
 
 ```{r}
 # for looping purposes
@@ -510,7 +513,7 @@ model_dist_thought <- lmer(CrrctdEAnoneg ~
 
 ```
 
-Since the model for normative thought accuracy is singular, we ran the models separately.
+Since the model for normative thought accuracy is singular, we ran the models separately. Table 2 represents the normative and distinctive accuracy across domains.
 
 ```{r}
 bind_rows(models_norm_distinct,
