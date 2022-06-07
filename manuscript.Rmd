@@ -93,7 +93,7 @@ These data were modeled using the Social Relations Model (SRM; Kashy & Kenny, 19
 
 Similar to decomposing overall accuracy into normative and distinctive components in the SAM analyses, baseline accuracy scores were calculated (see above for details) in order to estimate how much of the perceivers’ overall thought accuracy is attributable to making correct inferences based on general knowledge and/or stereotypes. Empathic accuracy scores were divided into normative (baseline accuracy) and distinctive accuracy (overall accuracy corrected for baseline accuracy) and SRM analyses were conducted on each component separately.  
 
-# Results {.tabset .tabset-fade}
+# Results and Discussion {.tabset .tabset-fade}
 
 ```{r, include = FALSE}
 # import data for exploratory predictors
@@ -396,7 +396,7 @@ null_models <- df_list %>%
     )
 
 null_models %>% 
-  kable_style(title = "<center><b>Null Models</b></center>") %>% 
+  kable_style(title = "<center><b>Table 2. Null Models</b></center>") %>% 
   kableExtra::pack_rows("Personality", 1, 5) %>% 
   kableExtra::pack_rows("Affect", 6, 10) %>% 
   kableExtra::pack_rows("Thought", 11, 15)
@@ -408,11 +408,6 @@ null_models2 <- df_list %>%
              (1|dyad_id),
            data = .x)
     )
-
-sjPlot::tab_model(null_models2[[1]],
-                  null_models2[[2]],
-                  null_models2[[3]], 
-                  dv.labels = c("Personality", "Affect", "Thought"))
 
 iccs <- 
 map_dfr(null_models2, performance::icc, by_group = TRUE) %>% 
@@ -430,90 +425,148 @@ iccs %>%
 
 ## Interpersonal accuracy
 
-In order to decompose the variance in interpersonal accuracy and compare across accuracy measures I ran a series of baseline variance decomposition models on the accuracy measures. All analyses were conducted in R’s lme4 package (Bates et al., 2013).
+All analyses were conducted in R’s lme4 package (Bates et al., 2013). The
 
 ```{r}
-# personality
-## final model
-SAM1 <- lmer(ptrait ~ targSRrC + AvgtraitC + 
-                (1 | PerUn) + 
-                (1 | TarUn) + 
-                (1 | DyUn), 
-              data = samdata)
+# for looping purposes
+df_personality_self <- 
+  df_personality %>% 
+  select(perceiver_id:judgment,
+         norm = self_norm,
+         distinct = self_dist)
 
-sjPlot::tab_model(SAM1)
+df_personality_inf <- 
+  df_personality %>% 
+  select(perceiver_id:judgment,
+         norm = inf_norm,
+         distinct = inf_dist)
 
-## extract empirical bayesian estimates for targets
-EBTRTtar <- ranef(SAM1)$TarUn
-EBTRTtar$TarUn<-as.numeric(row.names(EBTRTtar))
-map_dbl(EBTRTtar, sd)
+df_affect <- 
+  df_affect %>% 
+  rename(distinct = self_dist)
 
-## extract empirical bayesian estimates for perceivers
-EBTRTper <- ranef(SAM1)$PerUn
-EBTRTper$PerUn<-as.numeric(row.names(EBTRTper))
-map_dbl(EBTRTper,sd)
+df_list2 <- list(df_personality_self,
+                 df_personality_inf,
+                 df_affect)
 
-## Density plots for random effects will be placed here
+# models
+models_norm_distinct <- 
+  map_dfr(df_list2, ~
+            
+            lmer(judgment ~ distinct + norm +
+                   (1|perceiver_id) + 
+                   (1|target_id) +
+                   (1|dyad_id),
+                 data = .x) %>% 
+        
+        broom.mixed::tidy()
+          )
 
+# Accuracy for thoughts is a little different. So, we'll only have two null models for distinctive and normative accuracy for thoughts. See the methods section for details.
 
-## fit a model for each perceiver
-models_dyad <-
-samdata %>%
-  group_by(PerUn) %>%
-  nest() %>%
-  mutate(models = map(data, ~ {
+models_norm_distinct_thoughts <- 
+  df_thought %>% 
+  rename(Normative = BaselineEA100,
+         Distinctive = CrrctdEAnoneg) %>% 
+  pivot_longer(cols = c(Normative, Distinctive),
+               names_to = "DVs",
+               values_to = "rating") %>% 
+  split(., .$DVs) %>% 
+  map(., ~
+        
+        lmer(rating ~ 
+               (1|perceiver_id) + 
+               (1|target_id) +
+               (1|dyad_id),
+             data = .x)        
+        
+        )
 
-    lm(ptrait ~ targSRrC + AvgtraitC,
-              data = .x)
+map_dfr(models_norm_distinct_thoughts, isSingular) %>% 
+  kable_style(title = "<center><b>Are the models for thought accuracy singular?</b></center>")
 
-  }
-                      )
-         )
+model_norm_thought <- lmer(BaselineEA100 ~ 
+                             (1|perceiver_id),
+                           data = df_thought) %>% broom.mixed::tidy()
+
+model_dist_thought <- lmer(CrrctdEAnoneg ~ 
+                             (1|perceiver_id) + 
+                             (1|target_id) +
+                             (1|dyad_id),
+                           data = df_thought) %>% broom.mixed::tidy() 
+
 ```
 
-```{r}
-# affect
-samEAC <- lmer (Part ~ targSRrC + NormC + 
-                  (targSRrC + NormC|PerUn) + 
-                  (targSRrC + NormC|TarUn) + 
-                  (targSRrC + NormC|DyUn), 
-                data = samEACaggdata)
-
-sjPlot::tab_model(samEAC)
-
-```
+Since the model for normative thought accuracy is singular, we ran the models separately.
 
 ```{r}
-# thought
-# baseline accuracy
-normEASRM<- lmer(BaselineEA100 ~ 
-                   (1|PerUn) + 
-                   (1|TarUn) + 
-                   (1|DyUn) + 
-                   (1|Group), 
-                 data = eaSRMdata)
-
-# corrected for baseline
-diffEASRM<- lmer(CrrctdEAnoneg ~ 
-                    (1|PerUn) + 
-                    (1|TarUn) + 
-                    (1|DyUn) + 
-                    (1|Group), 
-                  data = eaSRMdata)
-
-sjPlot::tab_model(normEASRM, diffEASRM)
+bind_rows(models_norm_distinct,
+          model_norm_thought,
+          model_dist_thought) %>% 
+  kable_style(title = "<center><b>Table 3. Normative and Distinctive Accuracy</b></center>") %>% 
+  kableExtra::pack_rows("Self-reported Personality", 1, 7) %>% 
+  kableExtra::pack_rows("Informant-reported Personality", 8, 14) %>% 
+  kableExtra::pack_rows("Affect", 15, 21) %>% 
+  kableExtra::pack_rows("Normative Thought", 22, 24) %>% 
+  kableExtra::pack_rows("Distinctive Thought", 25, 29)
 ```
 
 ## Predictors of interpersonal accuracy
-
-WILL WORK ON THIS LATER.
+The last aim of the present study is to test individual-difference predictors of interpersonal accuracy. Table 3 demonstrates the relationship between the predictors and interpersonal accuracy across domains.
 
 ```{r}
+df_thought_long <- 
+  df_thought %>% 
+  pivot_longer(cols = InsecAtt_c:rapport_c,
+               names_to = "vars",
+               values_to = "value")
+
+df_thought_long <- split(df_thought2, df_thought2$vars)
+
+models5 <- map_dfr(df_thought5, ~
+            lmer(judgment ~ value +
+             (1 | perceiver_id) + 
+             (1 | target_id) +
+             (1 | dyad_id),
+           data = .x) %>% 
+             broom.mixed::tidy() %>% 
+             suppressWarnings(), 
+           .id = "Predictors"
+           )
+
+df_thought5 <- 
+  df_thought5 %>% 
+  mutate(m1 = map(data, ~
+            lmer(judgment ~ value +
+             (1 | perceiver_id) + 
+             (1 | target_id) +
+             (1 | dyad_id),
+           data = .x)
+                 )
+         )
+
+df_thought3 <- 
+  df_thought %>% 
+  pivot_longer(cols = InsecAtt_c:rapport_c,
+               names_to = "vars",
+               values_to = "value") %>% 
+  group_by(vars) %>% 
+  nest()
+
+df_thought3 <- 
+  df_thought3 %>% 
+  mutate(m1 = map(data, ~
+            lmer(judgment ~ value +
+             (1 | perceiver_id) + 
+             (1 | target_id) +
+             (1 | dyad_id),
+           data = .x)
+                 )
+         )
+
+
 
 ```
-
-
-# Discussion
 
 
 # Author Note
