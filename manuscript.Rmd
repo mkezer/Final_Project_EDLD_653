@@ -377,15 +377,28 @@ df_thought <- import(here::here("data", "d_thought.csv")) %>%
                       InsecAtt_c:rapport_c)) %>% 
   rename(judgment = EA100)
 
-
-```
-
-
-```{r null models}
+### create a list
 df_list <- list(df_personality,
                 df_affect,
                 df_thought)
 
+bind_rows(df_list, .id = "Domain") %>% 
+  mutate(Domain = recode(Domain, 
+                         "1" = "Personality",
+                         "2" = "Affect",
+                         "3" = "Thought")
+         ) %>% 
+  group_by(Domain) %>% 
+  nest() %>% 
+  drop_na() %>% 
+  mutate(N = map_dbl(data, nrow)
+         ) %>% 
+  select(-data) %>% 
+  kable_style(title = "<center><b>Number of Total Observations across Domains</b></center>")
+```
+
+
+```{r null models}
 null_models <- df_list %>% 
   map_dfr(
     ~ lmer(judgment ~ (1|perceiver_id) + 
@@ -514,58 +527,103 @@ bind_rows(models_norm_distinct,
 ## Predictors of interpersonal accuracy
 The last aim of the present study is to test individual-difference predictors of interpersonal accuracy. Table 3 demonstrates the relationship between the predictors and interpersonal accuracy across domains.
 
-```{r}
-df_thought_long <- 
-  df_thought %>% 
+```{r, include = FALSE}
+# I tried to combine everything in a single loop creating double-nested data but failed miserably
+
+# personality 
+df_personality_long <- 
+  df_personality %>% 
   pivot_longer(cols = InsecAtt_c:rapport_c,
                names_to = "vars",
                values_to = "value")
 
-df_thought_long <- split(df_thought2, df_thought2$vars)
+df_personality_long <- split(df_personality_long, df_personality_long$vars)
 
-models5 <- map_dfr(df_thought5, ~
-            lmer(judgment ~ value +
-             (1 | perceiver_id) + 
-             (1 | target_id) +
-             (1 | dyad_id),
-           data = .x) %>% 
+preds_pers <- map_dfr(df_personality_long, ~
+            lmer(judgment ~ value + self_norm:value + self_dist:value +
+                       (1 | perceiver_id) +
+                       (1 | target_id) +
+                       (1 | dyad_id),                   
+                     data = .x) %>% 
+             broom.mixed::tidy() %>% 
+             suppressWarnings() %>% 
+             suppressMessages(), 
+           .id = "Predictors"
+           )
+
+# affect
+df_affect_long <- 
+  df_affect %>% 
+  pivot_longer(cols = InsecAtt_c:rapport_c,
+               names_to = "vars",
+               values_to = "value")
+
+df_affect_long <- split(df_affect_long, df_affect_long$vars)
+
+preds_aff <- map_dfr(df_affect_long, ~
+            lmer(judgment ~ value + norm:value + distinct:value +
+                       (1 | perceiver_id) +
+                       (1 | target_id) +
+                       (1 | dyad_id),                   
+                     data = .x) %>% 
+             broom.mixed::tidy() %>% 
+             suppressWarnings() %>% 
+             suppressMessages(), 
+           .id = "Predictors"
+           )
+
+# thought
+df_thought_long <- 
+  df_thought %>% 
+  rename(Normative = BaselineEA100,
+         Distinctive = CrrctdEAnoneg) %>% 
+  pivot_longer(cols = InsecAtt_c:rapport_c,
+               names_to = "vars",
+               values_to = "value")
+
+df_thought_long <- split(df_thought_long, df_thought_long$vars)
+
+preds_thou_norm <- map_dfr(df_thought_long, ~
+            lmer(Normative ~ value +
+                       (1 | perceiver_id),
+                     data = .x) %>% 
              broom.mixed::tidy() %>% 
              suppressWarnings(), 
            .id = "Predictors"
            )
 
-df_thought5 <- 
-  df_thought5 %>% 
-  mutate(m1 = map(data, ~
-            lmer(judgment ~ value +
-             (1 | perceiver_id) + 
-             (1 | target_id) +
-             (1 | dyad_id),
-           data = .x)
-                 )
+preds_thou_dist <- map_dfr(df_thought_long, ~
+            lmer(Distinctive ~ value +
+                       (1 | perceiver_id) + 
+                       (1 | target_id) +
+                       (1 | dyad_id),
+                     data = .x) %>% 
+             broom.mixed::tidy() %>% 
+             suppressWarnings(), 
+           .id = "Predictors"
+           )
+# table 4
+tabl4 <- bind_rows(
+  preds_pers,
+  preds_aff,
+  preds_thou_norm,
+  preds_thou_dist,
+  .id = "Domain"
+) %>% 
+  mutate(across(estimate:df, round, 2),
+         p.value = scales::pvalue(p.value)
          )
+```
 
-df_thought3 <- 
-  df_thought %>% 
-  pivot_longer(cols = InsecAtt_c:rapport_c,
-               names_to = "vars",
-               values_to = "value") %>% 
-  group_by(vars) %>% 
-  nest()
-
-df_thought3 <- 
-  df_thought3 %>% 
-  mutate(m1 = map(data, ~
-            lmer(judgment ~ value +
-             (1 | perceiver_id) + 
-             (1 | target_id) +
-             (1 | dyad_id),
-           data = .x)
-                 )
-         )
-
-
-
+```{r}
+tabl4 %>% 
+  select(-Domain) %>% 
+  kable_style(title = "<center><b>Predictors of Interpersonal Accuracy</b></center>") %>% 
+  kableExtra::pack_rows("Personality", 1, 208) %>% 
+  kableExtra::pack_rows("Affect", 209, 416) %>% 
+  kableExtra::pack_rows("Normative Thought", 417, 520) %>% 
+  kableExtra::pack_rows("Distinctive Thought", 521, 676) %>% 
+  kableExtra::scroll_box(height = "1000px")
 ```
 
 
